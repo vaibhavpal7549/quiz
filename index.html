@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Dev Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .question-card {
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .option.correct {
+            border-color: #4caf50;
+            background: #4caf50;
+            color: white;
+        }
+
+        .option.incorrect {
+            border-color: #f44336;
+            background: #f44336;
+            color: white;
+        }
+
+        .option.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #f44336;
+            display: block;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-next {
+            background: #4caf50;
+            color: white;
+            display: none;
+        }
+
+        .btn-next:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .final-score {
+            text-align: center;
+            display: none;
+        }
+
+        .final-score h2 {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .btn-restart {
+            background: #667eea;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .btn-restart:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="header">
+            <h1>🌐 Web Development Quiz</h1>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">Question</div>
+                <div class="stat-value" id="questionNumber">1</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Correct</div>
+                <div class="stat-value" id="correctCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Incorrect</div>
+                <div class="stat-value" id="incorrectCount">0</div>
+            </div>
+        </div>
+
+        <div id="quizContent">
+            <div class="question-card">
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="button-container">
+                <button class="btn btn-submit" id="submitBtn" disabled>Submit Answer</button>
+                <button class="btn btn-next" id="nextBtn">Next Question</button>
+            </div>
+        </div>
+
+        <div class="final-score" id="finalScore">
+            <h2>Quiz Complete! 🎉</h2>
+            <div class="score-circle" id="scoreCircle"></div>
+            <p id="scoreSummary"></p>
+            <button class="btn-restart" id="restartBtn">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Set 1 - Regular MCQs
+            {q: "Which of the following best describes the role of a front-end developer?", options: ["Manages databases", "Designs UI with HTML, CSS, JS", "Configures web servers", "Implements APIs"], answer: 1},
+            {q: "What does HTML stand for?", options: ["HyperText Markup Language", "HighText Machine Language", "Hyper Transfer Markup Language", "Hyper Tool Multi Language"], answer: 0},
+            {q: "Which tag is used to create a hyperlink in HTML?", options: ["<link>", "<href>", "<a>", "<hyper>"], answer: 2},
+            {q: "Which HTML element is used to display the largest heading?", options: ["<h6>", "<h1>", "<header>", "<p>"], answer: 1},
+            {q: "Semantic HTML improves:", options: ["Styling performance", "Code readability and accessibility", "File size", "Image rendering"], answer: 1},
+            {q: "Which CSS property is used to change text color?", options: ["font-style", "text-color", "color", "background-color"], answer: 2},
+            {q: "The default position property of an element in CSS is:", options: ["absolute", "relative", "static", "fixed"], answer: 2},
+            {q: "Which CSS unit is relative to the root element's font size?", options: ["px", "em", "rem", "%"], answer: 2},
+            {q: "The CSS box model does NOT include:", options: ["Content", "Margin", "Border", "Layer"], answer: 3},
+            {q: "Which property is used to control element stacking order?", options: ["z-index", "order", "stack", "priority"], answer: 0},
+            {q: "Flexbox property to distribute extra space between items:", options: ["justify-content", "align-items", "flex-wrap", "display"], answer: 0},
+            {q: "In Grid layout, which property defines column sizes?", options: ["grid-template-rows", "grid-template-columns", "grid-area", "grid-gap"], answer: 1},
+            {q: "CSS animation uses which property for keyframes?", options: ["@style", "@animation", "@keyframes", "@frames"], answer: 2},
+            {q: "Which framework is primarily CSS-based?", options: ["React", "Bootstrap", "Django", "Node.js"], answer: 1},
+            {q: "Which tag represents semantic HTML?", options: ["<div>", "<span>", "<article>", "<b>"], answer: 2},
+            {q: "To link CSS with HTML, which tag is correct?", options: ['<style href="style.css">', '<css link="style.css">', '<link rel="stylesheet" href="style.css">', '<stylesheet link="style.css">'], answer: 2},
+            {q: "Which property makes elements overlap?", options: ["float", "position: absolute", "margin", "padding"], answer: 1},
+            {q: "Which CSS property controls the space between lines of text?", options: ["letter-spacing", "text-indent", "line-height", "spacing"], answer: 2},
+            {q: "Which HTML element is used for inserting an image?", options: ["<img>", "<src>", "<image>", "<picture>"], answer: 0},
+            {q: "Which is true about CSS Grid vs Flexbox?", options: ["Flexbox is for 2D layout", "Grid is for 1D layout", "Grid handles both rows and columns", "Flexbox is always better"], answer: 2},
+            {q: "The attribute alt in <img> is used for:", options: ["File path", "Alternate text if image fails", "Styling images", "Image size"], answer: 1},
+            {q: "Which CSS property is NOT used in positioning?", options: ["top", "right", "float", "opacity"], answer: 3},
+            {q: "CSS transform: rotate(90deg); rotates element:", options: ["Vertically", "Clockwise 90 degrees", "Counterclockwise 90 degrees", "Flips upside down"], answer: 1},
+            {q: "Which CSS property creates transition effects?", options: ["transition", "transform", "animation-delay", "keyframes"], answer: 0},
+            {q: "CSS Grid gap between rows and columns is controlled by:", options: ["margin", "grid-gap", "border-spacing", "spacing"], answer: 1},
+            {q: "HTML5 introduced which tag?", options: ["<marquee>", "<video>", "<font>", "<blink>"], answer: 1},
+            {q: "Which CSS framework uses utility classes?", options: ["Bootstrap", "Tailwind CSS", "Materialize", "Foundation"], answer: 1},
+            {q: "In CSS, position: fixed; means element is:", options: ["Relative to parent", "Relative to viewport", "Scrollable", "Hidden"], answer: 1},
+            {q: "Which HTML tag creates a table row?", options: ["<row>", "<tr>", "<td>", "<table>"], answer: 1},
+            {q: "Which meta tag is important for responsiveness?", options: ["<meta charset>", '<meta name="viewport">', "<meta author>", "<meta description>"], answer: 1},
+            
+            // Set 2 - Regular MCQs
+            {q: "Which protocol is used for web communication?", options: ["HTTP/HTTPS", "FTP", "SMTP", "SSH"], answer: 0},
+            {q: "Which HTML tag is used for inserting a line break?", options: ["<p>", "<br>", "<line>", "<break>"], answer: 1},
+            {q: "Which attribute specifies the URL in an anchor tag?", options: ["href", "link", "url", "src"], answer: 0},
+            {q: "<em> in HTML means:", options: ["Italics (semantic emphasis)", "Bold text", "Small text", "Highlight text"], answer: 0},
+            {q: "Which CSS property changes the background color?", options: ["bg-color", "color", "background-color", "bgcolor"], answer: 2},
+            {q: "The difference between inline and block elements is:", options: ["Inline takes full width", "Block flows inside text", "Block starts on new line", "Both are same"], answer: 2},
+            {q: "CSS unit % is relative to:", options: ["Screen width", "Parent element", "Root font size", "Absolute pixels"], answer: 1},
+            {q: "Which of the following is NOT semantic HTML?", options: ["<header>", "<footer>", "<div>", "<article>"], answer: 2},
+            {q: "Which CSS property controls text size?", options: ["font-weight", "text-size", "font-size", "size"], answer: 2},
+            {q: "Which CSS property is used for shadow effects?", options: ["text-decoration", "box-shadow", "outline", "filter"], answer: 1},
+            {q: "CSS Flexbox axis direction is controlled by:", options: ["flex-direction", "justify-content", "align-items", "order"], answer: 0},
+            {q: "In CSS Grid, which property merges cells?", options: ["grid-span", "grid-column", "column-span", "row-span"], answer: 1},
+            {q: "CSS transition requires:", options: ["Only transition-property", "Transition-property + transition-duration", "Only transition-duration", "Only transform"], answer: 1},
+            {q: "Which CSS framework is mobile-first?", options: ["Bootstrap", "Tailwind", "Foundation", "All of the above"], answer: 3},
+            {q: "Which tag is used for ordered lists?", options: ["<ul>", "<ol>", "<li>", "<list>"], answer: 1},
+            {q: "Which tag is used to group block-level content?", options: ["<group>", "<span>", "<div>", "<section>"], answer: 2},
+            {q: "CSS property to fix element at screen bottom:", options: ["position: relative; bottom: 0;", "position: absolute; bottom: 0;", "position: fixed; bottom: 0;", "float: bottom;"], answer: 2},
+            {q: "Which CSS property increases spacing between characters?", options: ["letter-spacing", "word-spacing", "line-height", "text-indent"], answer: 0},
+            {q: "Which HTML tag is used for inline code snippets?", options: ["<pre>", "<code>", "<kbd>", "<tt>"], answer: 1},
+            {q: "CSS Grid property to control spacing between cells:", options: ["margin", "gap", "padding", "grid-spacing"], answer: 1},
+            {q: "What is the default HTML doctype for modern browsers?", options: ["<!DOCTYPE html>", "<!DOCTYPE HTML5>", "<!DOCTYPE>", "<!HTML>"], answer: 0},
+            {q: "CSS animation timing is controlled by:", options: ["animation-speed", "animation-duration", "animation-delay", "keyframes"], answer: 1},
+            {q: "Which CSS property changes cursor style?", options: ["mouse-style", "pointer", "cursor", "hand"], answer: 2},
+            {q: "Which tag is used for main navigation in semantic HTML?", options: ["<menu>", "<nav>", "<ul>", "<header>"], answer: 1},
+            {q: "Which HTML tag is used for responsive image handling?", options: ["<img>", "<picture>", "<image>", "<source>"], answer: 1},
+            {q: "Which meta tag is used for SEO keywords?", options: ["<meta description>", '<meta name="keywords">', "<meta viewport>", "<meta author>"], answer: 1},
+            {q: "Which CSS layout is best for aligning items vertically?", options: ["Float", "Flexbox", "Grid", "Inline-block"], answer: 1},
+            {q: "Which CSS property hides an element but keeps its space?", options: ["display: none;", "opacity: 0;", "visibility: hidden;", "overflow: hidden;"], answer: 2},
+            {q: "Which HTML tag is used for form input?", options: ["<textbox>", "<form>", "<input>", "<field>"], answer: 2},
+            {q: "Which CSS property controls overflow content?", options: ["visible", "overflow", "hidden", "display"], answer: 1},
+            
+            // Set 3 - Regular MCQs
+            {q: "Which of these is NOT a web development role?", options: ["Frontend Developer", "Backend Developer", "Cloud Engineer", "UI Designer"], answer: 2},
+            {q: "Which HTML element is used to collect user input?", options: ["<form>", "<input>", "<data>", "<collect>"], answer: 1},
+            {q: "Which attribute is used to specify image path?", options: ["href", "src", "alt", "path"], answer: 1},
+            {q: "Which tag is used for bold text in semantic HTML5?", options: ["<strong>", "<b>", "<em>", "<i>"], answer: 0},
+            {q: "CSS external stylesheets use which tag?", options: ["<style>", "<link>", "<css>", "<import>"], answer: 1},
+            {q: "Which CSS selector targets all <p> inside <div>?", options: ["div p", "div.p", "p.div", "div+p"], answer: 0},
+            {q: "CSS property to align text center?", options: ["text-center", "align-text", "text-align", "margin"], answer: 2},
+            {q: "Which is NOT a CSS unit?", options: ["em", "px", "cm", "int"], answer: 3},
+            {q: "HTML <table> tag needs:", options: ["<row>", "<td>", "<tr>", "Both <tr> and <td>"], answer: 3},
+            {q: "Which HTML tag creates a dropdown?", options: ['<input type="dropdown">', "<select>", "<list>", "<menu>"], answer: 1},
+            {q: "Which CSS property adds space inside border?", options: ["margin", "border-spacing", "padding", "gap"], answer: 2},
+            {q: "Which flexbox property allows wrapping?", options: ["flex-wrap", "wrap", "align-wrap", "flex-flow"], answer: 0},
+            {q: "Which grid property defines row height?", options: ["grid-template-rows", "grid-template-columns", "row-gap", "grid-row"], answer: 0},
+            {q: "CSS @keyframes requires:", options: ["start-end only", "0% to 100% stages", "frames per second", "duration only"], answer: 1},
+            {q: "Which HTML element is used for captions in tables?", options: ["<title>", "<caption>", "<thead>", "<summary>"], answer: 1},
+            {q: "Which CSS property makes element float left or right?", options: ["display", "position", "float", "align"], answer: 2},
+            {q: "Which CSS property hides scrollbars?", options: ["display: none;", "overflow: hidden;", "visibility: hidden;", "scrollbar: none;"], answer: 1},
+            {q: "Which HTML tag defines a section of navigation links?", options: ["<menu>", "<nav>", "<aside>", "<header>"], answer: 1},
+            {q: "Which CSS framework uses grid system (12 columns)?", options: ["Bootstrap", "Tailwind", "Foundation", "Materialize"], answer: 0},
+            {q: "Which CSS property controls text boldness?", options: ["font-style", "font-weight", "bold", "style"], answer: 1},
+            {q: "HTML <video> tag requires which attribute?", options: ["src", "autoplay", "controls", "All of the above"], answer: 0},
+            {q: "Which CSS pseudo-class applies when user hovers?", options: [":hover", ":focus", ":visited", ":active"], answer: 0},
+            {q: "Which CSS property sets background image?", options: ["bg-image", "background-image", "image-url", "background-src"], answer: 1},
+            {q: "Which HTML element defines the document's title?", options: ["<head>", "<title>", "<h1>", "<meta>"], answer: 1},
+            {q: "CSS media queries use which keyword?", options: ["@media", "@query", "if-screen", "screen-query"], answer: 0},
+            {q: "Which tag is used for side content?", options: ["<aside>", "<section>", "<div>", "<extra>"], answer: 0},
+            {q: "Which HTML element is used for inline quotations?", options: ["<quote>", "<q>", "<blockquote>", "<em>"], answer: 1},
+            {q: "Which CSS property creates rounded corners?", options: ["border-style", "border-radius", "border-corner", "corner-radius"], answer: 1},
+            {q: "Which HTML attribute makes input mandatory?", options: ["require", "required", "must", "validate"], answer: 1},
+            {q: "Which HTML tag represents footer information?", options: ["<footer>", "<bottom>", "<end>", "<section>"], answer: 0},
+            
+            // Snippet-based MCQs
+            {q: "What will be displayed? <p>Hello <span style=\"display:none;\">World</span></p>", options: ["Hello World", "Hello", "World", "Nothing"], answer: 1},
+            {q: "Which HTML element is correct for linking an external stylesheet? ? rel=\"stylesheet\" href=\"style.css\">", options: ["<link>", "<style>", "<script>", "<meta>"], answer: 0},
+            {q: "What is the output? <h1>Title</h1> <h2>Title</h2>", options: ["Both same size text", "h1 larger than h2", "h2 larger than h1", "Error"], answer: 1},
+            {q: "What is the background color? <p style=\"background-color: rgba(255,0,0,0.5);\">Hello</p>", options: ["Red transparent", "Solid red", "White", "No color"], answer: 0},
+            {q: "What will happen? <a href=\"https://example.com\" target=\"_blank\">Click</a>", options: ["Opens in same tab", "Opens in new tab", "Shows error", "Opens in popup"], answer: 1},
+            {q: "Which tag makes text italic? ? This is italic ?", options: ["<i> </i>", "<em> </em>", "<italics> </italics>", "Both a & b"], answer: 3},
+            {q: "What is the correct way to add inline CSS? <p ?=\"color:red;\">Hello</p>", options: ["css", "style", "font", "inline"], answer: 1},
+            {q: "What will this code display? <img src=\"wrong.jpg\" alt=\"Image not found\">", options: ["Nothing", "Broken image icon", "Image not found", "Error"], answer: 2},
+            {q: "Which selector selects all <p> inside <div>? ? { color: blue; }", options: ["div + p", "div > p", "div p", "p div"], answer: 2},
+            {q: "What does this CSS rule do? p:first-child { color: green; }", options: ["All p tags green", "First p inside parent green", "First line green", "Error"], answer: 1},
+            {q: "What is the margin of the box? div { margin: 10px 20px; }", options: ["Top/Bottom 20, Left/Right 10", "Top/Bottom 10, Left/Right 20", "All 10", "All 20"], answer: 1},
+            {q: "What will be displayed? <p>&lt;Hello&gt;</p>", options: ["<Hello>", "Hello", "Error", "Nothing"], answer: 0},
+            {q: "Which property makes text bold in CSS?", options: ["font-weight", "text-style", "bold", "font-bold"], answer: 0},
+            {q: "What does this do? div { position: absolute; top: 10px; left: 20px; }", options: ["Relative positioning", "Fixed in place", "Moves div 10px down, 20px right", "Stays at default"], answer: 2},
+            {q: "What is the grid column span? .item { grid-column: 1 / span 2; }", options: ["1 column", "2 columns", "3 columns", "Error"], answer: 1},
+            {q: "What happens here? <input type=\"checkbox\" checked>", options: ["Box unchecked", "Box checked", "Error", "No display"], answer: 1},
+            {q: "Which CSS rule applies hover effect?", options: ["a:hover", "a:focus", "a:active", "a:visited"], answer: 0},
+            {q: "What will flexbox do? .container { display: flex; justify-content: space-between; }", options: ["All items overlap", "Items spread evenly with space between", "Items aligned left", "Error"], answer: 1},
+            {q: "Which CSS unit is relative to parent font size?", options: ["px", "em", "%", "vh"], answer: 1},
+            {q: "What is the output? <ul><li>One</li><li>Two</li></ul>", options: ["One Two", "• One • Two", "1. One 2. Two", "Error"], answer: 1},
+            {q: "Which tag is semantic?", options: ["<div>", "<section>", "<span>", "<b>"], answer: 1},
+            {q: "What happens here? <form><input type=\"text\" value=\"Hello\"></form>", options: ["Empty box", "Box with Hello", "Error", "Placeholder Hello"], answer: 1},
+            {q: "Which CSS makes animation?", options: ["@animation", "@keyframes", "transform", "transition"], answer: 1},
+            {q: "What does this do? div { transform: rotate(45deg); }", options: ["Rotates text", "Rotates div box 45 degrees", "No effect", "Error"], answer: 1},
+            {q: "Which framework is CSS based?", options: ["Django", "Flask", "Bootstrap", "React"], answer: 2},
+            {q: "Which tag creates a table row?", options: ["<tr>", "<td>", "<th>", "<table-row>"], answer: 0},
+            {q: "What does z-index do?", options: ["Moves item left-right", "Moves item front-back", "Rotates item", "No effect"], answer: 1},
+            {q: "Which input type hides characters as you type?", options: ["text", "password", "hidden", "secure"], answer: 1},
+            {q: "What does this snippet show? <a href=\"#section2\">Go Down</a>", options: ["Opens another page", "Scrolls to section2", "Error", "Does nothing"], answer: 1},
+            {q: "Which CSS property sets spacing between letters?", options: ["word-spacing", "letter-spacing", "spacing", "text-indent"], answer: 1}
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let incorrect = 0;
+        let selectedOption = null;
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionText').textContent = q.q;
+            document.getElementById('questionNumber').textContent = currentQuestion + 1;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = opt;
+                div.onclick = () => selectOption(idx, div);
+                container.appendChild(div);
+            });
+
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+            selectedOption = null;
+
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function selectOption(idx, element) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedOption = idx;
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function submitAnswer() {
+            const q = questions[currentQuestion];
+            const feedback = document.getElementById('feedback');
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach(opt => opt.classList.add('disabled'));
+            
+            if (selectedOption === q.answer) {
+                score++;
+                options[selectedOption].classList.add('correct');
+                feedback.className = 'feedback correct';
+                feedback.textContent = '✓ Correct! Well done!';
+                document.getElementById('correctCount').textContent = score;
+            } else {
+                incorrect++;
+                options[selectedOption].classList.add('incorrect');
+                options[q.answer].classList.add('correct');
+                feedback.className = 'feedback incorrect';
+                feedback.textContent = '✗ Incorrect. The correct answer is: ' + q.options[q.answer];
+                document.getElementById('incorrectCount').textContent = incorrect;
+            }
+            
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+                document.getElementById('submitBtn').style.display = 'block';
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function showFinalScore() {
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('finalScore').style.display = 'block';
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('scoreCircle').textContent = percentage + '%';
+            document.getElementById('scoreSummary').innerHTML = 
+                `You got <strong>${score}</strong> out of <strong>${questions.length}</strong> questions correct!`;
+            
+            document.getElementById('progressFill').style.width = '100%';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            incorrect = 0;
+            document.getElementById('correctCount').textContent = '0';
+            document.getElementById('incorrectCount').textContent = '0';
+            document.getElementById('quizContent').style.display = 'block';
+            document.getElementById('finalScore').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'block';
+            loadQuestion();
+        }
+
+        document.getElementById('submitBtn').onclick = submitAnswer;
+        document.getElementById('nextBtn').onclick = nextQuestion;
+        document.getElementById('restartBtn').onclick = restartQuiz;
+
+        loadQuestion();
+    </script>
+</body>
+</html>
